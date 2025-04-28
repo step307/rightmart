@@ -2,13 +2,23 @@
 
 namespace App\Command;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class LogImportFileCommandTest extends KernelTestCase
+class LogImportFileCommandTest extends WebTestCase
 {
-    public function testSomething(): void
+    private Connection $connection;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+
+        $this->connection = self::getContainer()->get(Connection::class);
+    }
+
+    public function testSuccessfulLogFileImport(): void
     {
         self::bootKernel();
         $application = new Application(self::$kernel);
@@ -20,5 +30,11 @@ class LogImportFileCommandTest extends KernelTestCase
         ]);
 
         $commandTester->assertCommandIsSuccessful();
+
+        $countInDb = $this->connection->executeQuery(
+            'SELECT COUNT(*) FROM http_log'
+        )->fetchOne();
+
+        self::assertSame(20, $countInDb, 'There should be 20 log files imported into DB');
     }
 }
