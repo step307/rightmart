@@ -1,17 +1,12 @@
 services:
   php:
-    image: php:8.4-cli
+    image: drewviles/php-pdo:latest # in real life we should create our own Dockerfile and used for dev and prod. This is just to speed up.
     volumes:
       - .:/app
     working_dir: /app
     command: sleep infinity
     depends_on:
       - mysql
-    environment:
-      - DB_HOST=mysql
-      - DB_DATABASE=test
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -28,6 +23,8 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test
+      MYSQL_DATABASE: app
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
     ports:
       - "3306:3306"
