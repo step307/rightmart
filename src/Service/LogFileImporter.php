@@ -39,7 +39,7 @@ class LogFileImporter implements LogFileImporterInterface
             try {
                 $log = $this->parser->parse($trimmedLine);
             } catch (HttpLogParsingException $e) {
-                $this->logger->error(
+                $this->logger->warning(
                     sprintf('Exception during importing file: %s. %s', $filePath, $e->getMessage()),
                     [
                         'error' => $e->getMessage(),

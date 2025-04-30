@@ -1,13 +1,9 @@
 <?php
 
-namespace App\Repository;
+namespace App\Service;
 
-use App\DTO\HttpLogLine;
-
-interface HttpLogRepositoryInterface
+interface LogCounterInterface
 {
-    public function save(HttpLogLine $httpLogLine): void;
-
     public function count(
         ?array $serviceNames = [],
         ?string $statusCode = null,

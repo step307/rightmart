@@ -14,8 +14,6 @@ class LogE2eTest extends WebTestCase
         parent::setUp();
         static::createClient();
 
-        $this->connection = self::getContainer()->get(Connection::class);
-
         $application = new Application(self::$kernel);
 
         $command = $application->find('app:log:import-file');
@@ -45,7 +43,12 @@ class LogE2eTest extends WebTestCase
     public function requestsProvider(): array
     {
         return [
-            ['/count', 20],
+            ['/count', 21], // we include also "unknown" services from erroneous log lines
+            ['/count?endDate=2019-01-01', 20], // erroneous lines might be excluded if their date is unknown
+            ['/count?serviceNames[0]=USER-SERVICE', 14],
+            ['/count?statusCode=400', 4],
+            ['/count?startDate=2019-01-01', 0],
+            ['/count?serviceNames[0]=USER-SERVICE&serviceNames[1]=USER-SERVICE2&statusCode=201&startDate=2018-08-17 09:22:58&endDate=2018-08-18 09:31:55', 5],
         ];
     }
 }
