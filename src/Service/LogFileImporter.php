@@ -2,19 +2,19 @@
 
 namespace App\Service;
 
-use App\DTO\HttpLogLine;
-use App\Exception\HttpLogParsingException;
-use App\Repository\HttpLogRepositoryInterface;
+use App\DTO\LogLine;
+use App\Exception\LogParsingException;
+use App\Repository\LogRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 class LogFileImporter implements LogFileImporterInterface
 {
 
     public function __construct(
-        private readonly FileIteratorInterface      $reader,
-        private readonly HttpLogLineParserInterface $parser,
-        private readonly HttpLogRepositoryInterface $repository,
-        private readonly LoggerInterface            $logger,
+        private readonly FileIteratorInterface  $reader,
+        private readonly LogLineParserInterface $parser,
+        private readonly LogRepositoryInterface $repository,
+        private readonly LoggerInterface        $logger,
     ) {
     }
 
@@ -38,7 +38,7 @@ class LogFileImporter implements LogFileImporterInterface
 
             try {
                 $log = $this->parser->parse($trimmedLine);
-            } catch (HttpLogParsingException $e) {
+            } catch (LogParsingException $e) {
                 $this->logger->warning(
                     sprintf('Exception during importing file: %s. %s', $filePath, $e->getMessage()),
                     [
@@ -48,7 +48,7 @@ class LogFileImporter implements LogFileImporterInterface
                     ]
                 );
 
-                $log = HttpLogLine::erroneous($line);
+                $log = LogLine::erroneous($line);
             }
 
             $this->repository->save($log);

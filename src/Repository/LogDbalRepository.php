@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\DTO\HttpLogLine;
+use App\DTO\LogLine;
 use App\Service\LogCounterInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -11,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 
 // Normally we have a service between controller and repository. But to avoid 1-line-classes, because of YAGNI and some
 // laziness repository will stand also for the service interface (LogCounterInterface). It is easy to change in the future.
-class HttpLogDbalRepository implements HttpLogRepositoryInterface, LogCounterInterface
+class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
 {
 
     const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
@@ -21,7 +21,7 @@ class HttpLogDbalRepository implements HttpLogRepositoryInterface, LogCounterInt
     ) {
     }
 
-    public function save(HttpLogLine $httpLogLine): void
+    public function save(LogLine $httpLogLine): void
     {
         // TODO: catch exception ?
         $this->connection->insert('http_log', [

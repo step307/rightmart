@@ -2,11 +2,11 @@
 
 namespace App\Repository;
 
-use App\DTO\HttpLogLine;
+use App\DTO\LogLine;
 
-interface HttpLogRepositoryInterface
+interface LogRepositoryInterface
 {
-    public function save(HttpLogLine $httpLogLine): void;
+    public function save(LogLine $httpLogLine): void;
 
     public function count(
         ?array $serviceNames = [],

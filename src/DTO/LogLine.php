@@ -4,7 +4,7 @@ namespace App\DTO;
 
 use DateTimeImmutable;
 
-readonly class HttpLogLine
+readonly class LogLine
 {
 
     public function __construct(

@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:log:import-file',
     description: 'Imports a logfile into database',
 )]
-class ImportHttpLogFileCommand extends Command
+class ImportLogFileCommand extends Command
 {
     public function __construct(
         private readonly LogFileImporterInterface $logFileImporter,

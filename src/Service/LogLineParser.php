@@ -2,13 +2,13 @@
 
 namespace App\Service;
 
-use App\DTO\HttpLogLine;
-use App\Exception\HttpLogParsingException;
+use App\DTO\LogLine;
+use App\Exception\LogParsingException;
 use DateTimeImmutable;
 
-class HttpLogLineParser implements HttpLogLineParserInterface
+class LogLineParser implements LogLineParserInterface
 {
-    public function parse(string $line): HttpLogLine
+    public function parse(string $line): LogLine
     {
         $values = str_getcsv($line, ' ',);
 
@@ -18,14 +18,14 @@ class HttpLogLineParser implements HttpLogLineParserInterface
 
         if (count($values) !== 7) {
             // TODO: it might be inappropriate to put the whole line into exception, e.g. due to eventual private data in it
-            throw new HttpLogParsingException(sprintf(
+            throw new LogParsingException(sprintf(
                 'Could not parse log line, number of values not 6. Log line: %s. Parsed values: %s',
                 $line,
                 implode(', ', $values)
             ));
         }
 
-        return new HttpLogLine(
+        return new LogLine(
             $line,
             $values[1],
             $values[2],
