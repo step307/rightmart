@@ -20,10 +20,18 @@ class LogFileImporter implements LogFileImporterInterface
 
     public function importFile(string $filePath): void
     {
+        $firstLine = true;
         $this->reader->openFile($filePath);
 
         foreach ($this->reader as $line) {
+
+            if ($firstLine) {
+                $line = $this->removeBom($line);
+                $firstLine = false;
+            }
+
             $trimmedLine = trim($line);
+
             if ($trimmedLine === '') {
                 continue;
             }
@@ -47,5 +55,10 @@ class LogFileImporter implements LogFileImporterInterface
 
             //var_dump($log);
         }
+    }
+
+    public function removeBom(string $line): string
+    {
+        return str_replace("\xEF\xBB\xBF", '', $line);
     }
 }

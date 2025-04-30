@@ -9,7 +9,6 @@ use Traversable;
 
 class FileReader implements FileIteratorInterface
 {
-    private ?string $filePath = null;
     private SplFileObject $fileObject;
 
     public function openFile(string $filePath): void
