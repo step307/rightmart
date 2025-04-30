@@ -35,6 +35,6 @@ class LogImportFileCommandTest extends WebTestCase
             'SELECT COUNT(*) FROM http_log'
         )->fetchOne();
 
-        self::assertSame(20, $countInDb, 'There should be 20 log files imported into DB');
+        self::assertSame(21, $countInDb, 'There should be 21 log files imported into DB');
     }
 }

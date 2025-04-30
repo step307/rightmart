@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Service\LogFileImporterInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,7 +17,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class LogImportFileCommand extends Command
 {
-    public function __construct()
+    public function __construct(
+        private readonly LogFileImporterInterface $logFileImporter,
+    )
     {
         parent::__construct();
     }
@@ -34,9 +37,9 @@ class LogImportFileCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $filePath = $input->getArgument('filePath');
 
-        if ($filePath) {
-            $io->note(sprintf('You passed an argument: %s', $filePath));
-        }
+        $io->note(sprintf('Importing file: %s', $filePath));
+
+        $this->logFileImporter->importFile($filePath);
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 
