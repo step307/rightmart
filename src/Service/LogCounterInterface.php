@@ -5,7 +5,7 @@ namespace App\Service;
 interface LogCounterInterface
 {
     public function count(
-        ?array $serviceNames = [],
+        array $serviceNames = [],
         ?string $statusCode = null,
         ?string $startDate = null,
         ?string $endDate = null

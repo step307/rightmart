@@ -35,7 +35,12 @@ class LogLineParser implements LogLineParserInterface
         } catch (DateMalformedStringException $e) {
             $dateTime = null;
             $this->logger->warning(
-                sprintf('Could not parse log line, malformed date. %s', $e->getMessage()),
+                'Could not parse log line, malformed date. {error}',
+                [
+                    'error' => $e->getMessage(),
+                    'line' => $line,
+                    'exception' => $e,
+                ]
             );
         }
 

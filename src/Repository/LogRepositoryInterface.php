@@ -9,7 +9,7 @@ interface LogRepositoryInterface
     public function save(LogLine $httpLogLine): void;
 
     public function count(
-        ?array $serviceNames = [],
+        array $serviceNames = [],
         ?string $statusCode = null,
         ?string $startDate = null,
         ?string $endDate = null

@@ -3,10 +3,13 @@
 namespace App\Repository;
 
 use App\DTO\LogLine;
+use App\Exception\RepositoryException;
 use App\Service\LogCounterInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 // Normally we have a service between controller and repository. But to avoid 1-line-classes, because of YAGNI and some
@@ -15,30 +18,49 @@ class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
 {
 
     const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+    const TABLE_NAME_LOG = 'http_log';
 
     public function __construct(
         private readonly Connection $connection,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
     public function save(LogLine $httpLogLine): void
     {
-        // TODO: catch exception ?
-        $this->connection->insert('http_log', [
-            'id' => Uuid::uuid4()->toString(),
-            'serviceName' => $httpLogLine->host,
-            'dateTime' => $httpLogLine->date?->format(self::DATE_TIME_FORMAT),
-            'request' => $httpLogLine->request,
-            'httpStatusCode' => $httpLogLine->status,
-            'logLine' => $httpLogLine->logLine,
-        ]);
+
+        try {
+            $this->connection->insert(self::TABLE_NAME_LOG, [
+                'id' => Uuid::uuid4()->toString(),
+                'serviceName' => $httpLogLine->host,
+                'dateTime' => $httpLogLine->date?->format(self::DATE_TIME_FORMAT),
+                'request' => $httpLogLine->request,
+                'httpStatusCode' => $httpLogLine->status,
+                'logLine' => $httpLogLine->logLine,
+            ]);
+        } catch (Exception $e) {
+            $this->logger->alert(
+                'Error during DB insert. {error}',
+                [
+                    'error' => $e->getMessage(),
+                    'line' => $httpLogLine->logLine,
+                    'exception' => $e,
+                ]
+            );
+
+            throw new RepositoryException(
+                sprintf('Error during DB insert. %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
     }
 
-    public function count(?array $serviceNames = [], ?string $statusCode = null, ?string $startDate = null, ?string $endDate = null): int
+    public function count(array $serviceNames = [], ?string $statusCode = null, ?string $startDate = null, ?string $endDate = null): int
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->select('count(*)')
-        ->from('http_log');
+        ->from(self::TABLE_NAME_LOG);
 
         if (count($serviceNames)) {
             $qb->where($qb->expr()->in('serviceName', ':serviceNames'));
@@ -60,8 +82,25 @@ class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
             $qb->setParameter('endDate', $endDate, ParameterType::STRING);
         }
 
-        $qb->executeQuery();
+        try {
+            $qb->executeQuery();
+            return $qb->fetchOne();
+        } catch (Exception $e) {
+            $this->logger->alert(
+                'Error during DB select. {error}',
+                [
+                    'error' => $e->getMessage(),
+                    'query' => $qb->getSQL(),
+                    'exception' => $e,
+                ]
+            );
 
-        return $qb->fetchOne();
+            throw new RepositoryException(
+                sprintf('Error during DB select. %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
+
     }
 }
