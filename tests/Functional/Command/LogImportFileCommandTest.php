@@ -11,6 +11,14 @@ class LogImportFileCommandTest extends WebTestCase
 {
     private Connection $connection;
 
+    private function getServiceLine(string $serviceName): array|false
+    {
+        return $this->connection->executeQuery(
+            'SELECT serviceName,dateTime,request,httpStatusCode,logLine FROM http_log WHERE serviceName = :serviceName',
+            ['serviceName' => $serviceName]
+        )->fetchAssociative();
+    }
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -31,9 +39,11 @@ class LogImportFileCommandTest extends WebTestCase
 
         $commandTester->assertCommandIsSuccessful();
 
-        $userServiceLine = $this->connection->executeQuery(
-            'SELECT serviceName,dateTime,request,httpStatusCode,logLine FROM http_log WHERE serviceName = "USER-SERVICE"'
-        )->fetchAssociative();
+        self::assertSame(
+            4,
+            $this->connection->executeQuery('SELECT COUNT(*) FROM http_log')->fetchOne(),
+            'All 4 non empty lines should be imported'
+        );
 
         self::assertEquals(
             [
@@ -43,13 +53,9 @@ class LogImportFileCommandTest extends WebTestCase
                 'httpStatusCode' => '201',
                 "logLine" => 'USER-SERVICE - - [18/Aug/2018:10:33:59 +0000] "POST /users HTTP/1.1" 201',
             ],
-            $userServiceLine,
+            $this->getServiceLine('USER-SERVICE'),
             'There should be 1 log line imported into DB for USER-SERVICE',
         );
-
-        $invoiceServiceLine = $this->connection->executeQuery(
-            'SELECT serviceName,dateTime,request,httpStatusCode,logLine FROM http_log WHERE serviceName = "INVOICE-SERVICE"'
-        )->fetchAssociative();
 
         self::assertEquals(
             [
@@ -59,8 +65,20 @@ class LogImportFileCommandTest extends WebTestCase
                 'httpStatusCode' => '201',
                 "logLine" => 'INVOICE-SERVICE - - [18/Aug/2018:10:26:53 +0000] "POST /invoices HTTP/1.1" 201',
             ],
-            $invoiceServiceLine,
+            $this->getServiceLine('INVOICE-SERVICE'),
             'There should be 1 log line imported into DB for INVOICE-SERVICE',
+        );
+
+        self::assertEquals(
+            [
+                'serviceName' => 'BAD-DATE',
+                'dateTime' => null,
+                'request' => 'POST /users HTTP/1.1',
+                'httpStatusCode' => '201',
+                "logLine" => 'BAD-DATE - - [18Augg2018:10:34:590000] "POST /users HTTP/1.1" 201',
+            ],
+            $this->getServiceLine('BAD-DATE'),
+            'Also the invalid date line should be imported',
         );
 
         $erroneousLine = $this->connection->executeQuery(
