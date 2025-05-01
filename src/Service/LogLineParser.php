@@ -17,12 +17,12 @@ class LogLineParser implements LogLineParserInterface
 
     public function parse(string $line): LogLine
     {
-        $values = str_getcsv($line, ' ',);
+        $this->logger->debug('Parsing log line: {line}', ['line' => $line]);
 
         preg_match('/(.+) (.+) (.+) \[(.+)] "(.+)" (.+)/', $line, $values);
 
         if (count($values) !== 7) {
-            // TODO: it might be inappropriate to put the whole line into exception, e.g. due to eventual private data in it
+            // TODO: it might be inappropriate to put the whole line into log/exception, e.g. due to eventual private data in it
             throw new LogParsingException(sprintf(
                 'Could not parse log line, number of values not 6. Log line: %s. Parsed values: %s',
                 $line,
@@ -44,7 +44,7 @@ class LogLineParser implements LogLineParserInterface
             );
         }
 
-        return new LogLine(
+        $logLineDto = new LogLine(
             $line,
             $values[1],
             $values[2],
@@ -53,5 +53,9 @@ class LogLineParser implements LogLineParserInterface
             $values[5],
             $values[6],
         );
+
+        $this->logger->debug('Parsed data: {line}', ['line' => json_encode($logLineDto)]);
+
+        return $logLineDto;
     }
 }
