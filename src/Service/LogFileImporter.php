@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\DTO\ImportResult;
 use App\DTO\LogLine;
 use App\Exception\LogParsingException;
+use App\Exception\RepositoryException;
 use App\Repository\LogRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
@@ -18,12 +20,14 @@ class LogFileImporter implements LogFileImporterInterface
     ) {
     }
 
-    public function importFile(string $filePath): void
+    public function importFile(string $filePath): ImportResult
     {
         $firstLine = true;
         $this->reader->openFile($filePath);
+        $result = new ImportResult();
 
         foreach ($this->reader as $line) {
+            $result->linesRead++;
 
             if ($firstLine) {
                 $line = $this->removeBom($line);
@@ -33,12 +37,14 @@ class LogFileImporter implements LogFileImporterInterface
             $trimmedLine = trim($line);
 
             if ($trimmedLine === '') {
+                $result->emptyLinesSkipped++;
                 continue;
             }
 
             try {
                 $log = $this->parser->parse($trimmedLine);
             } catch (LogParsingException $e) {
+                $result->parseErrors++;
                 $this->logger->warning(
                     'Exception during importing file: {filePath}. {error}',
                     [
@@ -51,10 +57,23 @@ class LogFileImporter implements LogFileImporterInterface
                 $log = LogLine::erroneous($line);
             }
 
-            $this->repository->save($log);
-
-            //var_dump($log);
+            try {
+                $this->repository->save($log);
+                $result->savedSuccessfully++;
+            } catch (RepositoryException $e) {
+                $result->saveErrors++;
+                $this->logger->alert(
+                    'Exception during saving log line: {filePath}. {error}',
+                    [
+                        'error' => $e->getMessage(),
+                        'filePath' => $filePath,
+                        'exception' => $e,
+                    ]
+                );
+            }
         }
+
+        return $result;
     }
 
     public function removeBom(string $line): string

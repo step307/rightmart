@@ -35,9 +35,17 @@ class ImportLogFileCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $filePath = $input->getArgument('filePath');
 
-        $io->note(sprintf('Importing file: %s', $filePath));
+        $io->info(sprintf('Importing file: %s', $filePath));
 
-        $this->logFileImporter->importFile($filePath);
+        $importResult = $this->logFileImporter->importFile($filePath);
+
+        $io->info([
+            sprintf('Total lines read: %d', $importResult->linesRead),
+            sprintf('Skipped empty lines: %d', $importResult->emptyLinesSkipped),
+            sprintf('Parse errors: %d', $importResult->parseErrors),
+            sprintf('Saving errors: %d', $importResult->saveErrors),
+            sprintf('Lines saved: %d', $importResult->savedSuccessfully)
+        ]);
 
         return Command::SUCCESS;
     }
