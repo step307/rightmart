@@ -32,6 +32,8 @@ class ImportLogFileCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // TODO: do we need some semaphores, protection from importing the same file twice ? etc.
+
         $io = new SymfonyStyle($input, $output);
         $filePath = $input->getArgument('filePath');
 
