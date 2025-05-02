@@ -35,7 +35,7 @@ class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
                 'serviceName' => $httpLogLine->host,
                 'dateTime' => $httpLogLine->date?->format(self::DATE_TIME_FORMAT),
                 'request' => $httpLogLine->request,
-                'httpStatusCode' => $httpLogLine->status,
+                'httpStatusCode' => $httpLogLine->status?->value,
                 'logLine' => $httpLogLine->logLine,
             ]);
         } catch (Exception $e) {

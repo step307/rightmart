@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Enum\HttpStatus;
 use DateTimeImmutable;
 
 readonly class LogLine
@@ -14,7 +15,7 @@ readonly class LogLine
         public ?string $authUser = null,
         public ?DateTimeImmutable $date = null,
         public ?string $request = null,
-        public ?string $status = null,
+        public ?HttpStatus $status = null,
     ) {
     }
 
