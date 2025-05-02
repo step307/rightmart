@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\DTO\LogLine;
-use App\Enum\HttpStatus;
+use App\Enum\HttpStatusCode;
 use App\Exception\RepositoryException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -55,7 +55,7 @@ class LogDbalRepositoryTest extends TestCase
                 '-',
                 new \DateTimeImmutable(),
                 'GET /something 1.1',
-                HttpStatus::from('200')
+                HttpStatusCode::from('200')
             )
         );
     }

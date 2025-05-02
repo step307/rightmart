@@ -2,12 +2,15 @@
 
 namespace App\Service;
 
+use App\Enum\HttpStatusCode;
+use DateTimeImmutable;
+
 interface LogCounterInterface
 {
     public function count(
-        array $serviceNames = [],
-        ?string $statusCode = null,
-        ?string $startDate = null,
-        ?string $endDate = null
+        array              $serviceNames = [],
+        ?HttpStatusCode    $statusCode = null,
+        ?DateTimeImmutable $startDate = null,
+        ?DateTimeImmutable $endDate = null
     ): int;
 }

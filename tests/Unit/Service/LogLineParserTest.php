@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\DTO\LogLine;
-use App\Enum\HttpStatus;
+use App\Enum\HttpStatusCode;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophet;
@@ -47,7 +47,7 @@ class LogLineParserTest extends TestCase
                     '-',
                     new DateTimeImmutable('18/Aug/2018:10:33:59 +0000'),
                     'POST /users HTTP/1.1',
-                    HttpStatus::from('201')
+                    HttpStatusCode::from('201')
                 ),
             ],
             'non UTC date' => [
@@ -59,7 +59,7 @@ class LogLineParserTest extends TestCase
                     '-',
                     new DateTimeImmutable('18/Aug/2018:07:33:59 +0000'),
                     'POST /users HTTP/1.1',
-                    HttpStatus::from('201')
+                    HttpStatusCode::from('201')
                 ),
             ],
             'invalid date' => [
@@ -71,7 +71,7 @@ class LogLineParserTest extends TestCase
                     '-',
                     null,
                     'POST /users HTTP/1.1',
-                    HttpStatus::from('201')
+                    HttpStatusCode::from('201')
                 ),
             ],
             'invalid http status' => [

@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\DTO\LogLine;
+use App\Enum\HttpStatusCode;
 use App\Exception\RepositoryException;
+use DateTimeImmutable;
 
 interface LogRepositoryInterface
 {
@@ -16,9 +18,9 @@ interface LogRepositoryInterface
      * @throws RepositoryException
      */
     public function count(
-        array $serviceNames = [],
-        ?string $statusCode = null,
-        ?string $startDate = null,
-        ?string $endDate = null
+        array              $serviceNames = [],
+        ?HttpStatusCode    $statusCode = null,
+        ?DateTimeImmutable $startDate = null,
+        ?DateTimeImmutable $endDate = null
     ): int;
 }

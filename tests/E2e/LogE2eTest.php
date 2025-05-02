@@ -28,7 +28,13 @@ class LogE2eTest extends WebTestCase
      */
     public function testSuccessfulImportAndCount(string $request, int $expectedCount): void
     {
-        self::getClient()->request('GET', $request);
+        self::getClient()->request(
+            method: 'GET',
+            uri: $request,
+            server: [
+                'HTTP_ACCEPT' => 'application/json',
+            ]
+        );
 
         $this->assertResponseIsSuccessful();
         $response = self::getClient()->getResponse()->getContent();

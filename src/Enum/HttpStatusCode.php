@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum HttpStatus: string
+enum HttpStatusCode: string
 {
     case CONTINUE = '100';
     case SWITCHING_PROTOCOLS = '101';

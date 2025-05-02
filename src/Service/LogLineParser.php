@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\DTO\LogLine;
-use App\Enum\HttpStatus;
+use App\Enum\HttpStatusCode;
 use App\Exception\LogParsingException;
 use DateMalformedStringException;
 use DateTimeImmutable;
@@ -50,7 +50,7 @@ class LogLineParser implements LogLineParserInterface
         }
 
         try {
-            $status = HttpStatus::from($values[6]);
+            $status = HttpStatusCode::from($values[6]);
         } catch (TypeError|ValueError $e) {
             $status = null;
             // error level could be also appropriate as this should never happen actually

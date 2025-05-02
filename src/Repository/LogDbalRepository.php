@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\DTO\LogLine;
+use App\Enum\HttpStatusCode;
 use App\Exception\RepositoryException;
 use App\Service\LogCounterInterface;
+use DateTimeImmutable;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -56,7 +58,7 @@ class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
         }
     }
 
-    public function count(array $serviceNames = [], ?string $statusCode = null, ?string $startDate = null, ?string $endDate = null): int
+    public function count(array $serviceNames = [], ?HttpStatusCode $statusCode = null, ?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null): int
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->select('count(*)')
@@ -69,17 +71,17 @@ class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
 
         if ($statusCode !== null) {
             $qb->andWhere($qb->expr()->eq('httpStatusCode', ':statusCode'));
-            $qb->setParameter('statusCode', $statusCode, ParameterType::STRING);
+            $qb->setParameter('statusCode', $statusCode->value, ParameterType::STRING);
         }
 
         if ($startDate !== null) {
             $qb->andWhere($qb->expr()->gte('dateTime', ':startDate'));
-            $qb->setParameter('startDate', $startDate, ParameterType::STRING);
+            $qb->setParameter('startDate', $startDate->format(self::DATE_TIME_FORMAT), ParameterType::STRING);
         }
 
         if ($endDate !== null) {
             $qb->andWhere($qb->expr()->lte('dateTime', ':endDate'));
-            $qb->setParameter('endDate', $endDate, ParameterType::STRING);
+            $qb->setParameter('endDate', $endDate->format(self::DATE_TIME_FORMAT), ParameterType::STRING);
         }
 
         try {
