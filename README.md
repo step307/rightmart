@@ -13,7 +13,7 @@ docker compose run composer composer install
 ### Start containers
 
 ```console 
-docker compose up -d
+docker compose up -d --wait
 docker compose exec php bin/console doctrine:migration:migrate -n
 ```
 
