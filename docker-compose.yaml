@@ -20,7 +20,7 @@ services:
     profiles:
       - donotstart
 
-  mysql:
+  mysql: # volume mount is missing here, so the DB data will disappear after restart
     image: mysql:8
     restart: always
     environment:
