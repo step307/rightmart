@@ -7,6 +7,7 @@ use App\Enum\HttpStatusCode;
 use App\Exception\RepositoryException;
 use App\Service\LogCounterInterface;
 use DateTimeImmutable;
+use DateTimeZone;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -76,12 +77,18 @@ class LogDbalRepository implements LogRepositoryInterface, LogCounterInterface
 
         if ($startDate !== null) {
             $qb->andWhere($qb->expr()->gte('dateTime', ':startDate'));
-            $qb->setParameter('startDate', $startDate->format(self::DATE_TIME_FORMAT), ParameterType::STRING);
+            $qb->setParameter(
+                'startDate',
+                $startDate->setTimezone(new DateTimeZone('UTC'))->format(self::DATE_TIME_FORMAT)
+            );
         }
 
         if ($endDate !== null) {
             $qb->andWhere($qb->expr()->lte('dateTime', ':endDate'));
-            $qb->setParameter('endDate', $endDate->format(self::DATE_TIME_FORMAT), ParameterType::STRING);
+            $qb->setParameter(
+                'endDate',
+                $endDate->setTimezone(new DateTimeZone('UTC'))->format(self::DATE_TIME_FORMAT)
+            );
         }
 
         try {
