@@ -1,6 +1,6 @@
 services:
   php:
-    image: drewviles/php-pdo:v1.3.0 # in real life we should create our own Dockerfile for dev and prod etc. This is just to speed up.
+    build: .
     volumes:
       - .:/app
     working_dir: /app
