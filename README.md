@@ -36,6 +36,6 @@ via Swagger UI http://localhost:8080/api/doc
 or
 ```console
 curl -X 'GET' \
-'http://localhost:8080/count?serviceNames[]=USER-SERVICE&serviceNames[]=INVOICE-SERVICE&statusCode=201&startDate=2017-08-17 00:00:00&endDate=2018-08-18 00:00:00' \
+'http://localhost:8080/count?serviceNames%5B%5D=USER-SERVICE&serviceNames%5B%5D=INVOICE-SERVICE&statusCode=201&startDate=2017-08-17%2000%3A00%3A00&endDate=2018-08-18%2000%3A00%3A00' \
 -H 'accept: application/json'
 ```
