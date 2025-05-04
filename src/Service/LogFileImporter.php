@@ -58,6 +58,7 @@ class LogFileImporter implements LogFileImporterInterface
             }
 
             try {
+                // TODO: We could improve performance using batches and run 1 INSERT per e.g. 100 lines
                 $this->repository->save($log);
                 $result->savedSuccessfully++;
             } catch (RepositoryException $e) {
